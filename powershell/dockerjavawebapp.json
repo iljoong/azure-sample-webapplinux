@@ -1,0 +1,100 @@
+﻿{ 
+ "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#", 
+ "contentVersion": "1.0.0.0", 
+ "parameters": { 
+   "siteName": { 
+     "type": "string", 
+     "metadata": { 
+       "description": "Name of azure web app" 
+     } 
+    }, 
+    "appServicePlanName": { 
+      "type": "string", 
+      "metadata": { 
+        "description": "Name of hosting plan" 
+      } 
+    },
+    "location": { 
+      "type": "string", 
+      "metadata": { 
+        "description": "Name of Azure DC location" 
+      } 
+    },
+    "dockerImage": { 
+      "type": "string", 
+      "metadata": { 
+        "description": "Name of public docker image" 
+      } 
+    }
+  }, 
+  "variables": {
+     "webappSite": "[parameters('siteName')]"
+  },
+  "resources": [ 
+    { 
+      "apiVersion": "2015-08-01", 
+      "name": "[parameters('appServicePlanName')]", 
+      "type": "Microsoft.Web/serverfarms", 
+      "location": "[parameters('location')]", 
+      "kind": "linux",
+      "properties": { 
+        "name": "[parameters('appServicePlanName')]",
+        "kind": "linux",
+        "workerSize": 0,
+        "numberOfWorkers": 1,
+        "reserved": true
+      },
+      "sku": {
+        "name": "S1",
+        "tier": "Standard",
+        "size": "S1",
+        "family": "S",
+        "capacity": 1
+        }
+    }, 
+    { 
+      "apiVersion": "2015-08-01", 
+      "name": "[variables('webappSite')]", 
+      "type": "Microsoft.Web/sites", 
+      "location": "[parameters('location')]",
+      "dependsOn": [ 
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]" 
+      ], 
+      "properties": { 
+        "name": "[variables('webappSite')]", 
+        "serverFarmId": "[parameters('appServicePlanName')]" 
+      }, 
+      "resources": [ 
+        { 
+          "apiVersion": "2015-08-01", 
+          "name": "web", 
+          "type": "config", 
+          "location": "[parameters('location')]",
+          "dependsOn": [ 
+            "[resourceId('Microsoft.Web/Sites', variables('webappSite'))]" 
+          ], 
+          "properties": { 
+            "alwaysOn": true, 
+            "requestTracingEnabled": true, 
+            "httpLoggingEnabled": true, 
+            "logsDirectorySizeLimit": 40, 
+            "detailedErrorLoggingEnabled": true, 
+            "scmType": "None"            
+           } 
+         },
+         {
+            "apiVersion": "2015-08-01", 
+            "name": "appsettings", 
+            "type": "config", 
+            "location": "[parameters('location')]",
+            "dependsOn": [ 
+              "[resourceId('Microsoft.Web/Sites', variables('webappSite'))]" 
+            ], 
+            "properties": { 
+                "DOCKER_CUSTOM_IMAGE_NAME": "[parameters('dockerImage')]"    
+           }
+         }
+       ] 
+     } 
+   ] 
+ } 
