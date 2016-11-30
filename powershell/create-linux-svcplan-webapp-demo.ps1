@@ -6,11 +6,13 @@ Add-AzureRmAccount
 
 #>
 
-$webAppName = 'mytomcatsample'
-$appServicePlan =  'TEST-PLAN1027'
-$resourceGroupName = 'TEST-RG1027'
-$location = 'Southeast Asia'
+# User Parameters
+$webAppName = '<APP-NAME>'
+$appServicePlan =  '<SERVICE-PLAN-NAME>'
+$resourceGroupName = '<RESOURCE-GROUP-NAME>'
+$location = 'Southeast Asia' # 'West Europe' , 'West US'
 
+# Sample dockerhub image
 $dockerImage = "iljoong/tomcatsample"
 
 Write-Output  ">>>1.CREATE WEB APP: $webAppName"

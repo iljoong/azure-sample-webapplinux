@@ -1,3 +1,4 @@
 ## Sample powershell
 
-Open ps with ISE and run script
+Open ps with ISE
+update parameter and execute script
